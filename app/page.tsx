@@ -2,6 +2,7 @@
 
 import {type ChangeEvent, type SubmitEvent, useEffect, useState} from "react";
 import axios from "axios";
+import Image from "next/image";
 
   type Task = {
 
@@ -19,6 +20,7 @@ import axios from "axios";
   const [tasks, setTasks] = useState<Task[]>([]);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  const [showCelebration, setShowCelebration] = useState(false);
 
   function sortTasks(tasksToSort: Task[], order: SortOrder) {
     return [...tasksToSort].sort((firstTask, secondTask) => {
@@ -82,6 +84,9 @@ import axios from "axios";
               : currentTask,
           ),
         );
+        if (!task.completed && response.data.completed) {
+          setShowCelebration(true);
+        }
       } catch (error) {
         console.error("Could not update task:", error);
   }
@@ -184,12 +189,19 @@ async function handleSortChange(
     <div className="flex flex-col flex-1 items-center justify-center bg-[#FEEBE7] font-sans dark:bg-black">
       <main className="flex flex-1 w-full max-w-6xl flex-col items-center justify-between py-32 px-16 bg-[#FEEBE7] sm:items-start">
 
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            My tasks
-          </h1> 
+        <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
+        <h1 className="flex items-center gap-3 text-3xl font-semibold leading-10 tracking-tight text-black">
+    <Image
+      src="/image/taskerra-logo.png"
+      alt="Taskérra butterfly logo"
+      width={48}
+      height={48}
+    />
+    Taskérra
+  </h1>
+          <p><i> Keeping track of your tasks so that you don&apos;t have to.</i></p>
           <div className="mt-6 grid w-full gap-8 md:grid-cols-2">
-          <div className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+          <div  className="w-full max-w-md rounded-xl border border-zinc-300 bg-[#FFFDF7] p-6 text-lg leading-8 text-zinc-600 shadow-[0_8px_0_#d4d4d8,0_14px_24px_rgba(0,0,0,0.12)]">
           <form   onSubmit={handleSubmit}
           className="flex max-w-md flex-col gap-4">
     <div>
@@ -199,7 +211,7 @@ async function handleSortChange(
         name="title"
         type="text"
         required
-        className="w-full rounded border p-2"
+         className="w-full rounded border p-2 outline-none focus:border-[#E85D83] focus:ring-2 focus:ring-[#E85D83]/30"
       />
     </div>
 
@@ -209,7 +221,7 @@ async function handleSortChange(
         id="description"
         name="description"
         required
-        className="w-full rounded border p-2"
+         className="w-full rounded border p-2 outline-none focus:border-[#E85D83] focus:ring-2 focus:ring-[#E85D83]/30"
       />
     </div>
 
@@ -220,13 +232,13 @@ async function handleSortChange(
         name="dueDate"
         type="date"
         required
-        className="w-full rounded border p-2"
+         className="w-full rounded border p-2 outline-none focus:border-[#E85D83] focus:ring-2 focus:ring-[#E85D83]/30"
       />
     </div>
 
     <button
       type="submit"
-      className="rounded bg-[#A2F4FD] px-4 py-2 font-semibold text-black hover:bg-[#4DB8EB]"
+      className="rounded-lg border-2 border-[#d97f6e] bg-[#FAA18F] px-4 py-3 font-semibold text-black shadow-sm transition hover:bg-[#e98c7b] hover:shadow-md"
     >
       Add task
     </button>
@@ -238,7 +250,7 @@ async function handleSortChange(
       id="sortOrder"
       value={sortOrder}
       onChange={handleSortChange}
-      className="mt-1 w-full rounded border border-[#FAA18F] bg-[#FAA18F] p-2 text-black"
+      className="mt-1 w-full rounded-lg border-2 border-[#d97f6e] bg-[#FAA18F] p-3 text-black shadow-sm outline-none focus:border-[#E85D83] focus:ring-2 focus:ring-[#E85D83]/40"
     >
       <option value="asc">Earliest first</option>
       <option value="desc">Latest first</option>
@@ -253,7 +265,8 @@ async function handleSortChange(
     ) : (
       <ul className="mt-4 flex flex-col gap-3">
         {tasks.map((task) => (
-          <li key={task.id} className="rounded border p-4">
+          <li key={task.id}
+          className="rounded-xl border border-zinc-300 bg-[#FFFDF7] p-5 shadow-[0_8px_0_#d4d4d8,0_14px_24px_rgba(0,0,0,0.12)] transition-transform hover:-translate-y-1">
             <h3 className="font-semibold">{task.title}</h3>
             <p>{task.description}</p>
             <p>Due: {new Date(task.dueDate).toLocaleDateString()}</p>
@@ -264,7 +277,7 @@ async function handleSortChange(
             <button
               type="button"
               onClick={() => handleToggleComplete(task)}
-                  className="rounded bg-[#86EFAC] px-4 py-2 font-semibold text-green-950 hover:bg-[#6EE7A0]"
+                  className="rounded bg-[#86D7B0] px-4 py-2 font-semibold text-green-950 hover:bg-[#72C59D]"
             >
               {task.completed ? "Mark incomplete" : "Mark complete"}
             </button>
@@ -273,7 +286,7 @@ async function handleSortChange(
             <button
               type="button"
               onClick={() => handleDeleteTask(task)}
-              className="rounded border-2 border-rose-300 bg-[radial-gradient(circle_at_center,_white_45%,_#fff1f2_100%)] px-4 py-2 font-semibold text-rose-500 hover:brightness-95"
+              className="rounded border-2 border-[#D95770] bg-[radial-gradient(circle_at_center,_white_40%,_#F9D5DC_100%)] px-4 py-2 font-semibold text-[#A62E49] transition hover:brightness-95"
 
             >
               Delete task
@@ -320,7 +333,8 @@ async function handleSortChange(
               <button
                 type="button"
                 onClick={() => startEditing(task)}
-                className="rounded border-2 border-violet-300 bg-[radial-gradient(circle_at_center,_white_45%,_#f5f3ff_100%)] px-4 py-2 font-semibold text-violet-500 hover:brightness-95"
+                className="rounded border-2 border-[#FF8904] bg-[radial-gradient(circle_at_center,_white_45%,_#fff3e0_100%)] px-4 py-2 font-semibold text-[#c95e00] hover:brightness-95"
+                 
               >
                 Edit task
               </button>
@@ -335,6 +349,28 @@ async function handleSortChange(
         </div>
        
       </main>
+      {showCelebration && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="relative w-full max-w-lg rounded-lg bg-white p-4 shadow-xl">
+        <button
+          type="button"
+          onClick={() => setShowCelebration(false)}
+          className="absolute right-2 top-2 rounded px-3 py-1 text-sm text-zinc-700 hover:bg-zinc-100"
+        >
+          Close
+        </button>
+
+        <video
+          src="/videos/celebration.mp4"
+          autoPlay
+          controls
+          playsInline
+          onEnded={() => setShowCelebration(false)}
+          className="w-full rounded"
+        />
+      </div>
+    </div>
+  )}
     </div>
   );
 }
